@@ -7,7 +7,8 @@ import { Layers, Ruler, Timer, Zap, Cable, Play } from "lucide-react";
 import SectionCard from "@/app/components/SectionCard";
 import NumberField from "@/app/components/NumberField";
 
-import type { StackConfig, StackDerived } from "./types";
+import type StackConfig from "@/app/models/SatelliteStack";
+import type { StackDerived } from "./types";
 import { clamp, formatMs, formatOhms } from "./format";
 
 type Props = {
@@ -25,7 +26,7 @@ export default function StackConfigForm({ cfg, setCfg, derived }: Props) {
     try {
       await new Promise((r) => setTimeout(r, 450));
       alert(
-        `Config saved!\n\nSize: ${cfg.size}×${cfg.size}\nLayers: ${cfg.layers}\nRelease step: ${cfg.releaseStepMs} ms\nVsup: ${cfg.supplyVoltage} V\nRref: ${formatOhms(cfg.resistorValueOhms)}`,
+        `Config saved!\n\nRows: ${cfg.rows}\nCols: ${cfg.cols}\nLayers: ${cfg.layers}\nRelease step: ${cfg.releaseStepMs} ms\nRref: ${cfg.resistorValue}`,
       );
     } finally {
       setBusy(false);
@@ -46,18 +47,33 @@ export default function StackConfigForm({ cfg, setCfg, derived }: Props) {
       >
         <div className="grid gap-4 sm:grid-cols-2">
           <NumberField
-            label="Stack size"
-            help="Rows and columns are always equal"
+            label="Rows"
+            help="Number of rows in the stack"
             icon={<Ruler className="h-4 w-4" />}
-            value={cfg.size}
+            value={cfg.rows}
             min={1}
             max={12}
             step={1}
-            displayValue={`${cfg.size} × ${cfg.size}`}
             onChange={(v) =>
               setCfg((c) => ({
                 ...c,
-                size: clamp(Math.round(v), 1, 12),
+                rows: clamp(Math.round(v), 1, 12),
+              }))
+            }
+          />
+
+          <NumberField
+            label="Columns"
+            help="Number of columns in the stack"
+            icon={<Ruler className="h-4 w-4" />}
+            value={cfg.cols}
+            min={1}
+            max={12}
+            step={1}
+            onChange={(v) =>
+              setCfg((c) => ({
+                ...c,
+                cols: clamp(Math.round(v), 1, 12),
               }))
             }
           />
@@ -138,7 +154,7 @@ export default function StackConfigForm({ cfg, setCfg, derived }: Props) {
           <NumberField
             label="Reference resistance"
             icon={<Cable className="h-4 w-4" />}
-            value={cfg.resistorValueOhms}
+            value={0}
             min={1}
             max={1e7}
             step={1}
@@ -146,7 +162,7 @@ export default function StackConfigForm({ cfg, setCfg, derived }: Props) {
             onChange={(v) =>
               setCfg((c) => ({
                 ...c,
-                resistorValueOhms: clamp(Math.round(v), 1, 10_000_000),
+                resistorValue: v.toString(),
               }))
             }
           />
@@ -160,7 +176,7 @@ export default function StackConfigForm({ cfg, setCfg, derived }: Props) {
                 V = {cfg.supplyVoltage.toFixed(2)} V
               </span>
               <span className="rounded-full border border-purple-500/20 bg-purple-500/10 px-3 py-1 text-purple-100">
-                Rref = {formatOhms(cfg.resistorValueOhms)}
+                Rref = {cfg.resistorValue}
               </span>
             </div>
 

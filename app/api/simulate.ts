@@ -4,6 +4,7 @@ import fs from "fs";
 import generateNetlist from "./generateNetlist";
 
 export async function POST(req: Request) {
+  console.log("Received simulation request:", req);
   const config = await req.json();
   const netlist = generateNetlist(config);
 

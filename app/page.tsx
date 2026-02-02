@@ -1,20 +1,21 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import StackShell from "@/app/features/stack-config/StackShell";
 import StackHeader from "@/app/features/stack-config/StackHeader";
 import StackConfigForm from "@/app/features/stack-config/StackConfigForm";
 import StackSummary from "@/app/features/stack-config/StackSummary";
 import { computeDerived } from "@/app/features/stack-config/derived";
-import type { StackConfig } from "@/app/features/stack-config/types";
+import type StackConfig from "@/app/models/SatelliteStack";
 
 export default function Page() {
   const [cfg, setCfg] = useState<StackConfig>({
-    size: 3,
+    rows: 3,
+    cols: 3,
     layers: 3,
     releaseStepMs: 10,
     supplyVoltage: 5,
-    resistorValueOhms: 10_000,
+    resistorValue: "10k",
   });
 
   const derived = useMemo(() => computeDerived(cfg), [cfg]);
