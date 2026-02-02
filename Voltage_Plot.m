@@ -1,0 +1,36 @@
+% Read data
+opts = detectImportOptions("mes_voltages.dat", ...
+    "FileType","text", ...
+    "MultipleDelimsAsOne", true);
+
+opts.Delimiter = {' '};      % space and tab
+
+T = readtable("mes_voltages.dat", opts);
+
+n = 3; % Number of rows and columns
+number_of_brackets = n * n * 4;
+
+figure;
+tiledlayout(sqrt(number_of_brackets), sqrt(number_of_brackets));
+
+column = 1;
+
+for k = 1:number_of_brackets
+    timeCol   = 2*k - 1;  % odd columns
+    signalCol = 2*k;      % even columns
+
+    t = T{:, timeCol};
+    y = T{:, signalCol};
+
+    nexttile;
+    plot(t, y, "LineWidth", 1.2);
+    grid on;
+
+    title(sprintf("Column: %d, Bracket: %d", column, mod(k - 1, 4) + 1));
+    xlabel("Time (s)");
+    ylabel("Voltage (V)");
+
+    if (mod(k, 4) == 0)
+        column = column + 1;
+    end
+end
