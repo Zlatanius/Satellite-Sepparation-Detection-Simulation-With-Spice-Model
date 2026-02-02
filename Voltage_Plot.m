@@ -7,7 +7,7 @@ opts.Delimiter = {' '};      % space and tab
 
 T = readtable("mes_voltages.dat", opts);
 
-n = 3; % Number of rows and columns
+n = 4; % Number of rows and columns
 number_of_brackets = n * n * 4;
 
 figure;

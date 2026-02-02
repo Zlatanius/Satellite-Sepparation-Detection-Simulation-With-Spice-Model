@@ -1,6 +1,6 @@
 import StackConfig from "../models/SatelliteStack";
 
-export default function generateNetlist(cfg: StackConfig) {
+export default function generateNetlist(cfg: StackConfig): string {
   const { rows, cols, layers, releaseStepMs, supplyVoltage, resistorValue } =
     cfg;
 
@@ -45,7 +45,7 @@ export default function generateNetlist(cfg: StackConfig) {
       }
 
       columnInstances.push(
-        `Xcol_${r}_${c} ${colNode} 0 0 0 0 ${ctrls.join(" ")} ${mesPoints.join(" ")} COLUMN RVAL=${resistorValue}`,
+        `Xcol_${r}_${c} ${colNode} 0 0 0 0 ${ctrls.join(" ")} ${mesPoints.join(" ")} COLUMN RVAL=${resistorValue}k`,
       );
     }
   }
@@ -147,7 +147,7 @@ ${controlSources.join("\n")}
 .control
   set filetype=ascii
   run
-  wrdata mes_voltages.dat ${printVoltages.join(" ")}
+  wrdata app/simulation/mes_voltages.dat ${printVoltages.join(" ")}
   quit
 .endc
 .end

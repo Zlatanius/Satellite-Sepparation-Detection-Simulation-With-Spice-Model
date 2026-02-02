@@ -19,14 +19,29 @@ type Props = {
 
 export default function StackConfigForm({ cfg, setCfg, derived }: Props) {
   const [busy, setBusy] = useState(false);
+  console.log("Starting simulation with config:", cfg);
 
   async function simulateStack() {
-    // Placeholder: wire to API route later.
     setBusy(true);
     try {
-      await new Promise((r) => setTimeout(r, 450));
+      const response = await fetch("api/simulate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(cfg),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert(`Simulation failed: ${data.error}`);
+      } else {
+        alert(`Simulation completed!\n\nOutput:\n${data.raw}`);
+      }
+    } catch (error) {
       alert(
-        `Config saved!\n\nRows: ${cfg.rows}\nCols: ${cfg.cols}\nLayers: ${cfg.layers}\nRelease step: ${cfg.releaseStepMs} ms\nRref: ${cfg.resistorValue}`,
+        `Error: ${error instanceof Error ? error.message : "Unknown error"}`,
       );
     } finally {
       setBusy(false);

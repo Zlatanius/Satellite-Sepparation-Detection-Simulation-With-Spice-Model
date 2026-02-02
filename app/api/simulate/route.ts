@@ -1,12 +1,13 @@
 import { exec } from "child_process";
 import fs from "fs";
 
-import generateNetlist from "./generateNetlist";
+import generateNetlist from "../generateNetlist";
+import StackConfig from "@/app/models/SatelliteStack";
 
 export async function POST(req: Request) {
   console.log("Received simulation request:", req);
-  const config = await req.json();
-  const netlist = generateNetlist(config);
+  const config: StackConfig = await req.json();
+  const netlist: string = generateNetlist(config);
 
   fs.writeFileSync("/tmp/test.cir", netlist);
 
