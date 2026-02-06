@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Layers, Ruler, Timer, Zap, Cable, Play } from "lucide-react";
 
@@ -9,7 +10,7 @@ import NumberField from "@/app/components/NumberField";
 
 import type StackConfig from "@/app/models/SatelliteStack";
 import type { StackDerived } from "./types";
-import { clamp, formatMs, formatOhms } from "./format";
+import { clamp, formatMs } from "./format";
 
 type Props = {
   cfg: StackConfig;
@@ -18,34 +19,10 @@ type Props = {
 };
 
 export default function StackConfigForm({ cfg, setCfg, derived }: Props) {
-  const [busy, setBusy] = useState(false);
-  console.log("Starting simulation with config:", cfg);
+  const router = useRouter();
 
-  async function simulateStack() {
-    setBusy(true);
-    try {
-      const response = await fetch("api/simulate", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(cfg),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        alert(`Simulation failed: ${data.error}`);
-      } else {
-        alert(`Simulation completed!\n\nOutput:\n${data.raw}`);
-      }
-    } catch (error) {
-      alert(
-        `Error: ${error instanceof Error ? error.message : "Unknown error"}`,
-      );
-    } finally {
-      setBusy(false);
-    }
+  function simulateStack() {
+    router.push(`/results?rows=${cfg.rows}&cols=${cfg.cols}`);
   }
 
   return (
@@ -197,11 +174,10 @@ export default function StackConfigForm({ cfg, setCfg, derived }: Props) {
 
             <button
               onClick={simulateStack}
-              disabled={busy}
-              className="inline-flex items-center justify-center gap-2 rounded-xl border border-purple-500/25 bg-gradient-to-b from-purple-500/25 to-purple-700/10 px-4 py-2 text-sm font-medium text-purple-50 shadow-[0_0_0_1px_rgba(168,85,247,0.12)] transition hover:from-purple-500/30 hover:to-purple-700/15 disabled:cursor-not-allowed disabled:opacity-60"
+              className="inline-flex items-center justify-center gap-2 rounded-xl border border-purple-500/25 bg-gradient-to-b from-purple-500/25 to-purple-700/10 px-4 py-2 text-sm font-medium text-purple-50 shadow-[0_0_0_1px_rgba(168,85,247,0.12)] transition hover:from-purple-500/30 hover:to-purple-700/15"
             >
               <Play className="h-4 w-4" />
-              {busy ? "Preparing…" : "Simulate Stack"}
+              Simulate Stack
             </button>
           </div>
         </div>
