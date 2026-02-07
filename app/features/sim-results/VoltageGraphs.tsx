@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { LineChart as LineChartIcon, ChevronDown } from "lucide-react";
 import SectionCard from "@/app/components/SectionCard";
@@ -10,6 +10,7 @@ import type { StackConfig } from "@/app/features/stack-config/types";
 type Props = {
   measurements: ColumnMeasurements[];
   config: StackConfig;
+  selectedColumnLabel?: string;
 };
 
 function VoltageChart({
@@ -154,7 +155,9 @@ function VoltageChart({
   );
 }
 
-export default function VoltageGraphs({ measurements, config }: Props) {
+export default function VoltageGraphs({ measurements, config, selectedColumnLabel }: Props) {
+  const sectionRef = useRef<HTMLDivElement>(null);
+
   // Generate all possible column IDs based on stack configuration
   const allColumns = useMemo(() => {
     const totalColumns = config.size * config.size;
@@ -177,6 +180,28 @@ export default function VoltageGraphs({ measurements, config }: Props) {
   );
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
+  // Convert row-col label (e.g., "1-1") to column ID (e.g., "col-1")
+  const labelToColumnId = (label: string): string => {
+    const [rowStr, colStr] = label.split("-");
+    const row = parseInt(rowStr) - 1; // Convert to 0-indexed
+    const col = parseInt(colStr) - 1; // Convert to 0-indexed
+    const columnIndex = row * config.size + col + 1; // 1-indexed column number
+    return `col-${columnIndex}`;
+  };
+
+  // Handle external column selection
+  useEffect(() => {
+    if (selectedColumnLabel) {
+      const columnId = labelToColumnId(selectedColumnLabel);
+      setSelectedColumn(columnId);
+      setIsDropdownOpen(false);
+      // Scroll to the graph section with smooth behavior
+      setTimeout(() => {
+        sectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 100);
+    }
+  }, [selectedColumnLabel, config.size]);
+
   const currentMeasurement = measurements.find(
     (m) => m.columnId === selectedColumn,
   );
@@ -187,6 +212,7 @@ export default function VoltageGraphs({ measurements, config }: Props) {
 
   return (
     <motion.div
+      ref={sectionRef}
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.45, delay: 0.12 }}

@@ -13,6 +13,7 @@ import type { SimulationResults } from "@/app/features/sim-results/types";
 export default function SimulationResultsPage() {
   const searchParams = useSearchParams();
   const [results, setResults] = useState<SimulationResults | null>(null);
+  const [selectedColumnLabel, setSelectedColumnLabel] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     const config = {
@@ -50,7 +51,10 @@ export default function SimulationResultsPage() {
 
       <div className="mx-auto w-full max-w-5xl px-6 pb-10">
         <div className="mt-8 space-y-6">
-          <StackVisualization3D config={results.config} />
+          <StackVisualization3D
+            config={results.config}
+            onColumnClick={setSelectedColumnLabel}
+          />
           <SatelliteOverview
             satellites={results.satellites}
             config={results.config}
@@ -58,6 +62,7 @@ export default function SimulationResultsPage() {
           <VoltageGraphs
             measurements={results.measurements}
             config={results.config}
+            selectedColumnLabel={selectedColumnLabel}
           />
         </div>
 
