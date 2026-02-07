@@ -1,3 +1,5 @@
+import type { StackConfig } from "@/app/features/stack-config/types";
+
 export type SatelliteRelease = {
   id: string;
   column: number;
@@ -18,14 +20,7 @@ export type ColumnMeasurements = {
 };
 
 export type SimulationResults = {
-  config: {
-    rows: number;
-    cols: number;
-    layers: number;
-    releaseStepMs: number;
-    supplyVoltage: number;
-    resistorValue: string;
-  };
+  config: StackConfig;
   satellites: SatelliteRelease[];
   measurements: ColumnMeasurements[];
   rawOutput?: string;

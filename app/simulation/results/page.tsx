@@ -54,7 +54,10 @@ export default function SimulationResultsPage() {
             satellites={results.satellites}
             config={results.config}
           />
-          <VoltageGraphs measurements={results.measurements} />
+          <VoltageGraphs
+            measurements={results.measurements}
+            config={results.config}
+          />
         </div>
 
         <footer className="mt-10 text-xs text-zinc-500">

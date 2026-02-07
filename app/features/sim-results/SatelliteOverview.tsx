@@ -5,14 +5,11 @@ import { motion } from "framer-motion";
 import { Satellite, Clock, Layers, Grid3x3 } from "lucide-react";
 import SectionCard from "@/app/components/SectionCard";
 import type { SatelliteRelease } from "./types";
+import type { StackConfig } from "@/app/features/stack-config/types";
 
 type Props = {
   satellites: SatelliteRelease[];
-  config: {
-    rows: number;
-    cols: number;
-    layers: number;
-  };
+  config: StackConfig;
 };
 
 export default function SatelliteOverview({ satellites, config }: Props) {
@@ -30,8 +27,8 @@ export default function SatelliteOverview({ satellites, config }: Props) {
         <div className="mb-4 grid gap-3 sm:grid-cols-3">
           <StatCard
             icon={<Grid3x3 className="h-4 w-4" />}
-            label="Columns"
-            value={config.cols}
+            label="Satellite columns"
+            value={config.rows * config.cols}
           />
           <StatCard
             icon={<Layers className="h-4 w-4" />}

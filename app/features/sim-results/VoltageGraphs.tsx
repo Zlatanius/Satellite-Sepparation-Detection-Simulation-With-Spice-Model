@@ -1,13 +1,15 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import { LineChart as LineChartIcon, ChevronDown } from "lucide-react";
 import SectionCard from "@/app/components/SectionCard";
 import type { ColumnMeasurements } from "./types";
+import type { StackConfig } from "@/app/features/stack-config/types";
 
 type Props = {
   measurements: ColumnMeasurements[];
+  config: StackConfig;
 };
 
 function VoltageChart({
@@ -152,14 +154,35 @@ function VoltageChart({
   );
 }
 
-export default function VoltageGraphs({ measurements }: Props) {
+export default function VoltageGraphs({ measurements, config }: Props) {
+  // Generate all possible column IDs based on stack configuration
+  const allColumns = useMemo(() => {
+    const totalColumns = config.rows * config.cols;
+    return Array.from({ length: totalColumns }, (_, i) => {
+      const columnNum = i + 1;
+      const columnId = `col-${columnNum}`;
+      const columnLabel = `Column ${columnNum}`;
+      const hasMeasurements = measurements.some((m) => m.columnId === columnId);
+
+      return {
+        columnId,
+        columnLabel,
+        hasMeasurements,
+      };
+    });
+  }, [config.rows, config.cols, measurements]);
+
   const [selectedColumn, setSelectedColumn] = useState<string>(
-    measurements[0]?.columnId || "",
+    allColumns[0]?.columnId || "",
   );
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const currentMeasurement = measurements.find(
     (m) => m.columnId === selectedColumn,
+  );
+
+  const currentColumnInfo = allColumns.find(
+    (c) => c.columnId === selectedColumn,
   );
 
   return (
@@ -183,7 +206,7 @@ export default function VoltageGraphs({ measurements }: Props) {
               className="flex w-full items-center justify-between rounded-xl border border-purple-500/20 bg-black/30 px-4 py-3 text-sm font-medium text-purple-100 transition hover:border-purple-500/30 hover:bg-black/40"
             >
               <span>
-                {currentMeasurement?.columnLabel || "Select a column"}
+                {currentColumnInfo?.columnLabel || "Select a column"}
               </span>
               <ChevronDown
                 className={`h-4 w-4 transition-transform ${isDropdownOpen ? "rotate-180" : ""}`}
@@ -197,20 +220,27 @@ export default function VoltageGraphs({ measurements }: Props) {
                 transition={{ duration: 0.15 }}
                 className="absolute z-10 mt-2 w-full overflow-hidden rounded-xl border border-purple-500/20 bg-[#0b0716]/95 shadow-xl backdrop-blur"
               >
-                {measurements.map((measurement) => (
+                {allColumns.map((column) => (
                   <button
-                    key={measurement.columnId}
+                    key={column.columnId}
                     onClick={() => {
-                      setSelectedColumn(measurement.columnId);
+                      setSelectedColumn(column.columnId);
                       setIsDropdownOpen(false);
                     }}
                     className={`w-full px-4 py-3 text-left text-sm transition hover:bg-purple-500/10 ${
-                      selectedColumn === measurement.columnId
+                      selectedColumn === column.columnId
                         ? "bg-purple-500/15 font-medium text-purple-100"
-                        : "text-zinc-300"
+                        : column.hasMeasurements
+                          ? "text-zinc-300"
+                          : "text-zinc-500"
                     }`}
                   >
-                    {measurement.columnLabel}
+                    <span>{column.columnLabel}</span>
+                    {!column.hasMeasurements && (
+                      <span className="ml-2 text-xs text-zinc-600">
+                        (no data)
+                      </span>
+                    )}
                   </button>
                 ))}
               </motion.div>
@@ -218,12 +248,12 @@ export default function VoltageGraphs({ measurements }: Props) {
           </div>
         </div>
 
-        {currentMeasurement && (
+        {currentMeasurement ? (
           <div className="rounded-xl border border-purple-500/10 bg-black/20 p-6">
             <div className="mb-4 flex items-center justify-between">
               <div>
                 <div className="text-sm font-medium text-purple-100">
-                  {currentMeasurement.columnLabel}
+                  {currentColumnInfo?.columnLabel}
                 </div>
                 <div className="text-xs text-zinc-400">
                   {currentMeasurement.data.length} data points
@@ -248,13 +278,11 @@ export default function VoltageGraphs({ measurements }: Props) {
               <span>Voltage (V)</span>
             </div>
           </div>
-        )}
-
-        {!currentMeasurement && (
+        ) : (
           <div className="rounded-xl border border-purple-500/10 bg-black/20 p-12 text-center">
             <LineChartIcon className="mx-auto mb-3 h-10 w-10 text-purple-500/30" />
             <p className="text-sm text-zinc-400">
-              No measurement data available
+              No measurement data available for {currentColumnInfo?.columnLabel}
             </p>
           </div>
         )}
