@@ -1,8 +1,7 @@
 import type { StackConfig } from "../features/stack-config/types";
 
 export default function generateNetlist(cfg: StackConfig): string {
-  const { rows, cols, layers, releaseStepMs, supplyVoltage, resistorValue } =
-    cfg;
+  const { size, layers, releaseStepMs, supplyVoltage, resistorValue } = cfg;
 
   let timeIndex = 1;
   const controlSources: string[] = [];
@@ -11,8 +10,8 @@ export default function generateNetlist(cfg: StackConfig): string {
 
   // --- Generate control signals ---
   for (let layer = layers; layer >= 1; layer--) {
-    for (let r = 1; r <= rows; r++) {
-      for (let c = 1; c <= cols; c++) {
+    for (let r = 1; r <= size; r++) {
+      for (let c = 1; c <= size; c++) {
         const ctrlName = `CTRL_L${layer}_R${r}_C${c}`;
         const t = timeIndex * releaseStepMs;
 
@@ -26,8 +25,8 @@ export default function generateNetlist(cfg: StackConfig): string {
   }
 
   // --- Generate columns ---
-  for (let r = 1; r <= rows; r++) {
-    for (let c = 1; c <= cols; c++) {
+  for (let r = 1; r <= size; r++) {
+    for (let c = 1; c <= size; c++) {
       const colNode = `C_${r}_${c}`;
 
       // supply per column
@@ -99,8 +98,8 @@ ${satellitesInColumn.join("\n")}
   // --- Voltage Measurements ---
   const printVoltages: string[] = [];
 
-  for (let r = 1; r <= rows; r++) {
-    for (let c = 1; c <= cols; c++) {
+  for (let r = 1; r <= size; r++) {
+    for (let c = 1; c <= size; c++) {
       for (let i = 1; i <= 4; i++) {
         printVoltages.push(`V(MES_${r}_${c}_${i})`);
       }
@@ -142,7 +141,7 @@ ${columnInstances.join("\n")}
 * ---- Release control signals ----
 ${controlSources.join("\n")}
 
-.tran 0.1m ${timeIndex * releaseStepMs}m
+.tran ${(timeIndex * releaseStepMs) / 1000}m ${timeIndex * releaseStepMs}m
 
 .control
   set filetype=ascii
