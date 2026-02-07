@@ -64,10 +64,10 @@ ngspice --version  # Should show ngspice version information
 1. **Clone the repository:**
    ```bash
    # Using HTTPS
-   git clone https://github.com/YOUR_USERNAME/satellites-spice.git
+   git clone https://github.com/Zlatanius/Satellite-Sepparation-Detection-Simulation-With-Spice-Model.git
 
    # Or using SSH
-   git clone git@github.com:YOUR_USERNAME/satellites-spice.git
+   git clone git@github.com:Zlatanius/Satellite-Sepparation-Detection-Simulation-With-Spice-Model.git
 
    # Navigate to the project directory
    cd satellites-spice
