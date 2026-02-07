@@ -3,6 +3,17 @@
 import React, { useState, useMemo, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { LineChart as LineChartIcon, ChevronDown } from "lucide-react";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Area,
+  ComposedChart,
+} from "recharts";
 import SectionCard from "@/app/components/SectionCard";
 import type { ColumnMeasurements } from "./types";
 import type { StackConfig } from "@/app/features/stack-config/types";
@@ -15,142 +26,89 @@ type Props = {
 
 function VoltageChart({
   data,
-  width,
-  height,
 }: {
   data: { timeMs: number; voltage: number }[];
-  width: number;
-  height: number;
 }) {
   if (data.length === 0) return null;
 
-  const padding = 40;
-  const chartWidth = width - padding * 2;
-  const chartHeight = height - padding * 2;
-
-  const minTime = Math.min(...data.map((d) => d.timeMs));
-  const maxTime = Math.max(...data.map((d) => d.timeMs));
-  const minVoltage = Math.min(...data.map((d) => d.voltage));
-  const maxVoltage = Math.max(...data.map((d) => d.voltage));
-
-  const timeRange = maxTime - minTime || 1;
-  const voltageRange = maxVoltage - minVoltage || 1;
-
-  const pathD = data
-    .map((d, i) => {
-      const x = padding + ((d.timeMs - minTime) / timeRange) * chartWidth;
-      const y =
-        padding + chartHeight - ((d.voltage - minVoltage) / voltageRange) * chartHeight;
-      return `${i === 0 ? "M" : "L"} ${x} ${y}`;
-    })
-    .join(" ");
+  console.log(`VoltageChart rendering with ${data.length} data points`, {
+    firstPoint: data[0],
+    lastPoint: data[data.length - 1],
+    sample: data.slice(0, 5),
+  });
 
   return (
-    <div className="overflow-x-auto">
-      <svg
-        width={width}
-        height={height}
-        className="w-full"
-        style={{ minWidth: `${width}px` }}
-      >
-        <defs>
-          <linearGradient id="lineGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#a855f7" stopOpacity="0.8" />
-            <stop offset="100%" stopColor="#6366f1" stopOpacity="0.6" />
-          </linearGradient>
-          <linearGradient id="areaGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#a855f7" stopOpacity="0.2" />
-            <stop offset="100%" stopColor="#a855f7" stopOpacity="0.0" />
-          </linearGradient>
-        </defs>
-
-        {/* Grid lines */}
-        {[0, 1, 2, 3, 4].map((i) => {
-          const y = padding + (chartHeight / 4) * i;
-          return (
-            <line
-              key={`grid-${i}`}
-              x1={padding}
-              y1={y}
-              x2={width - padding}
-              y2={y}
-              stroke="rgba(168, 85, 247, 0.1)"
-              strokeWidth="1"
-            />
-          );
-        })}
-
-        {/* Area fill */}
-        <path
-          d={`${pathD} L ${padding + chartWidth} ${padding + chartHeight} L ${padding} ${padding + chartHeight} Z`}
-          fill="url(#areaGradient)"
-        />
-
-        {/* Line */}
-        <path
-          d={pathD}
-          fill="none"
-          stroke="url(#lineGradient)"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-
-        {/* Data points */}
-        {data.map((d, i) => {
-          const x = padding + ((d.timeMs - minTime) / timeRange) * chartWidth;
-          const y =
-            padding + chartHeight - ((d.voltage - minVoltage) / voltageRange) * chartHeight;
-          return (
-            <circle
-              key={i}
-              cx={x}
-              cy={y}
-              r="3"
-              fill="#a855f7"
-              stroke="#0b0716"
-              strokeWidth="2"
-            />
-          );
-        })}
-
-        {/* Axes labels */}
-        <text
-          x={padding}
-          y={height - 10}
-          fill="rgba(161, 161, 170, 0.6)"
-          fontSize="11"
+    <div className="w-full" style={{ height: "400px" }}>
+      <ResponsiveContainer width="100%" height="100%">
+        <ComposedChart
+          data={data}
+          margin={{ top: 10, right: 30, left: 10, bottom: 30 }}
         >
-          {minTime.toFixed(0)}
-        </text>
-        <text
-          x={width - padding}
-          y={height - 10}
-          fill="rgba(161, 161, 170, 0.6)"
-          fontSize="11"
-          textAnchor="end"
-        >
-          {maxTime.toFixed(0)}
-        </text>
-        <text
-          x={padding - 5}
-          y={padding + chartHeight}
-          fill="rgba(161, 161, 170, 0.6)"
-          fontSize="11"
-          textAnchor="end"
-        >
-          {minVoltage.toFixed(2)}
-        </text>
-        <text
-          x={padding - 5}
-          y={padding + 5}
-          fill="rgba(161, 161, 170, 0.6)"
-          fontSize="11"
-          textAnchor="end"
-        >
-          {maxVoltage.toFixed(2)}
-        </text>
-      </svg>
+          <defs>
+            <linearGradient id="colorVoltage" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="#a855f7" stopOpacity={0.3} />
+              <stop offset="95%" stopColor="#a855f7" stopOpacity={0} />
+            </linearGradient>
+          </defs>
+          <CartesianGrid
+            strokeDasharray="3 3"
+            stroke="rgba(168, 85, 247, 0.1)"
+            vertical={false}
+          />
+          <XAxis
+            dataKey="timeMs"
+            stroke="rgba(168, 85, 247, 0.5)"
+            tick={{ fill: "rgba(168, 85, 247, 0.7)", fontSize: 12 }}
+            label={{
+              value: "Time (ms)",
+              position: "insideBottom",
+              offset: -20,
+              fill: "rgba(168, 85, 247, 0.7)",
+              fontSize: 13,
+            }}
+          />
+          <YAxis
+            stroke="rgba(168, 85, 247, 0.5)"
+            tick={{ fill: "rgba(168, 85, 247, 0.7)", fontSize: 12 }}
+            label={{
+              value: "Voltage (V)",
+              angle: -90,
+              position: "insideLeft",
+              fill: "rgba(168, 85, 247, 0.7)",
+              fontSize: 13,
+            }}
+            domain={[0, "auto"]}
+          />
+          <Tooltip
+            contentStyle={{
+              backgroundColor: "rgba(11, 7, 22, 0.95)",
+              border: "1px solid rgba(168, 85, 247, 0.3)",
+              borderRadius: "8px",
+              color: "#e9d5ff",
+            }}
+            labelStyle={{ color: "#a855f7" }}
+            formatter={(value: number) => [
+              `${value.toFixed(4)} V`,
+              "Voltage",
+            ]}
+            labelFormatter={(label: number) => `Time: ${label.toFixed(2)} ms`}
+          />
+          <Area
+            type="monotone"
+            dataKey="voltage"
+            stroke="none"
+            fill="url(#colorVoltage)"
+          />
+          <Line
+            type="monotone"
+            dataKey="voltage"
+            stroke="#a855f7"
+            strokeWidth={2}
+            dot={false}
+            activeDot={{ r: 5, fill: "#a855f7" }}
+          />
+        </ComposedChart>
+      </ResponsiveContainer>
     </div>
   );
 }
@@ -282,7 +240,7 @@ export default function VoltageGraphs({ measurements, config, selectedColumnLabe
             <div className="mb-4 flex items-center justify-between">
               <div>
                 <div className="text-sm font-medium text-purple-100">
-                  {currentColumnInfo?.columnLabel}
+                  Column {currentColumnInfo?.columnLabel}
                 </div>
                 <div className="text-xs text-zinc-400">
                   {currentMeasurement.data.length} data points
@@ -296,15 +254,10 @@ export default function VoltageGraphs({ measurements, config, selectedColumnLabe
               </div>
             </div>
 
-            <VoltageChart
-              data={currentMeasurement.data}
-              width={600}
-              height={300}
-            />
+            <VoltageChart data={currentMeasurement.data} />
 
-            <div className="mt-4 flex items-center justify-between text-xs text-zinc-400">
-              <span>Time (ms)</span>
-              <span>Voltage (V)</span>
+            <div className="mt-4 text-center text-xs text-zinc-500">
+              Hover over the graph to see detailed values
             </div>
           </div>
         ) : (

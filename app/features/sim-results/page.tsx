@@ -16,16 +16,31 @@ export default function SimulationResultsPage() {
   const [selectedColumnLabel, setSelectedColumnLabel] = useState<string | undefined>(undefined);
 
   useEffect(() => {
-    const config = {
-      size: parseInt(searchParams.get("size") || "3"),
-      layers: parseInt(searchParams.get("layers") || "3"),
-      releaseStepMs: parseInt(searchParams.get("releaseStepMs") || "10"),
-      supplyVoltage: parseFloat(searchParams.get("supplyVoltage") || "5"),
-      resistorValue: searchParams.get("resistorValue") || "10k",
-    };
+    // Check if we have real simulation results in sessionStorage
+    const storedResults = sessionStorage.getItem("simulationResults");
 
-    const mockResults = generateMockSimulationResults(config);
-    setResults(mockResults);
+    if (storedResults) {
+      // Use real simulation results
+      const parsedResults: SimulationResults = JSON.parse(storedResults);
+      console.log("Loaded simulation results:", {
+        numColumns: parsedResults.measurements.length,
+        firstColumnDataPoints: parsedResults.measurements[0]?.data.length,
+        sampleData: parsedResults.measurements[0]?.data.slice(0, 5),
+      });
+      setResults(parsedResults);
+    } else {
+      // Fallback to mock data if no simulation results available
+      const config = {
+        size: parseInt(searchParams.get("size") || "3"),
+        layers: parseInt(searchParams.get("layers") || "3"),
+        releaseStepMs: parseInt(searchParams.get("releaseStepMs") || "10"),
+        supplyVoltage: parseFloat(searchParams.get("supplyVoltage") || "5"),
+        resistorValue: searchParams.get("resistorValue") || "10k",
+      };
+
+      const mockResults = generateMockSimulationResults(config);
+      setResults(mockResults);
+    }
   }, [searchParams]);
 
   if (!results) {

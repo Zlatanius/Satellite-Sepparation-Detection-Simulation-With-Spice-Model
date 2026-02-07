@@ -39,6 +39,9 @@ export default function StackConfigForm({ cfg, setCfg, derived }: Props) {
         alert(`Simulation failed: ${data.error}`);
         setBusy(false);
       } else {
+        // Store simulation results in sessionStorage
+        sessionStorage.setItem("simulationResults", JSON.stringify(data));
+
         const params = new URLSearchParams({
           size: cfg.size.toString(),
           layers: cfg.layers.toString(),
