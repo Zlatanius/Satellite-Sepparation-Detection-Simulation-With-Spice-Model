@@ -121,10 +121,18 @@ export async function POST(req: Request) {
   const config: StackConfig = await req.json();
   const netlist: string = generateNetlist(config);
 
-  fs.writeFileSync("/tmp/test.cir", netlist);
+  // Create netlist directory if it doesn't exist
+  const netlistDir = path.join(process.cwd(), "app/simulation/netlist");
+  if (!fs.existsSync(netlistDir)) {
+    fs.mkdirSync(netlistDir, { recursive: true });
+  }
+
+  // Save netlist to simulation/netlist folder
+  const netlistPath = path.join(netlistDir, "test.cir");
+  fs.writeFileSync(netlistPath, netlist);
 
   return new Promise((resolve) => {
-    exec("ngspice -b /tmp/test.cir", (err, stdout) => {
+    exec(`ngspice -b "${netlistPath}"`, (err, stdout) => {
       if (err) {
         console.error("Simulation error:", err);
         resolve(Response.json({ error: err.message }, { status: 500 }));
@@ -148,7 +156,9 @@ export async function POST(req: Request) {
         // Debug logging
         console.log(`Parsed ${measurements.length} column measurements`);
         if (measurements.length > 0) {
-          console.log(`First column has ${measurements[0].data.length} data points`);
+          console.log(
+            `First column has ${measurements[0].data.length} data points`,
+          );
           console.log(
             `Sample data points:`,
             measurements[0].data.slice(0, 5).map((d) => ({

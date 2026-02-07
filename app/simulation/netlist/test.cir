@@ -1,0 +1,99 @@
+
+* Umbilical separation model
+
+.model SW SW(Ron=1e12 Roff=0.01 Vt=2 Vh=0)
+
+
+* A signle bracket sub circuit
+.subckt BRACKET sigin sigout gnd ctrl RVAL=10k
+Sbr sigin sigout ctrl gnd SW
+Rbr sigout gnd {RVAL}
+.ends BRACKET
+
+
+* A single satellite (4 brackets)
+.subckt SATELLITE sigin1 sigin2 sigin3 sigin4 sigout1 sigout2 sigout3 sigout4 gnd1 gnd2 gnd3 gnd4 ctrl RVAL=10k
+Xb1 sigin1 sigout1 gnd1 ctrl BRACKET RVAL={RVAL}
+Xb2 sigin2 sigout2 gnd2 ctrl BRACKET RVAL={RVAL}
+Xb3 sigin3 sigout3 gnd3 ctrl BRACKET RVAL={RVAL}
+Xb4 sigin4 sigout4 gnd4 ctrl BRACKET RVAL={RVAL}
+.ends SATELLITE
+
+
+* A column of satellites
+
+.subckt COLUMN vin gnd1 gnd2 gnd3 gnd4 ctrl1 ctrl2 ctrl3 mes1 mes2 mes3 mes4 RVAL=10k
+
+Rref1 vin mes1 {RVAL}
+Rref2 vin mes2 {RVAL}
+Rref3 vin mes3 {RVAL}
+Rref4 vin mes4 {RVAL}
+
+Rend end gnd 1e12
+
+Xsat1 mes1 mes2 mes3 mes4 sigin2_1 sigin2_2 sigin2_3 sigin2_4 gnd1 gnd2 gnd3 gnd4 ctrl1 SATELLITE RVAL={RVAL}
+Xsat2 sigin2_1 sigin2_2 sigin2_3 sigin2_4 sigin3_1 sigin3_2 sigin3_3 sigin3_4 gnd1 gnd2 gnd3 gnd4 ctrl2 SATELLITE RVAL={RVAL}
+Xsat3 sigin3_1 sigin3_2 sigin3_3 sigin3_4 end end end end gnd1 gnd2 gnd3 gnd4 ctrl3 SATELLITE RVAL={RVAL}
+.ends COLUMN
+
+
+
+* Top level netlist (the whole stack)
+V_SUP_1_1 C_1_1 0 5
+V_SUP_1_2 C_1_2 0 5
+V_SUP_1_3 C_1_3 0 5
+V_SUP_2_1 C_2_1 0 5
+V_SUP_2_2 C_2_2 0 5
+V_SUP_2_3 C_2_3 0 5
+V_SUP_3_1 C_3_1 0 5
+V_SUP_3_2 C_3_2 0 5
+V_SUP_3_3 C_3_3 0 5
+
+Xcol_1_1 C_1_1 0 0 0 0 CTRL_L1_R1_C1 CTRL_L2_R1_C1 CTRL_L3_R1_C1 MES_1_1_1 MES_1_1_2 MES_1_1_3 MES_1_1_4 COLUMN RVAL=10k
+Xcol_1_2 C_1_2 0 0 0 0 CTRL_L1_R1_C2 CTRL_L2_R1_C2 CTRL_L3_R1_C2 MES_1_2_1 MES_1_2_2 MES_1_2_3 MES_1_2_4 COLUMN RVAL=10k
+Xcol_1_3 C_1_3 0 0 0 0 CTRL_L1_R1_C3 CTRL_L2_R1_C3 CTRL_L3_R1_C3 MES_1_3_1 MES_1_3_2 MES_1_3_3 MES_1_3_4 COLUMN RVAL=10k
+Xcol_2_1 C_2_1 0 0 0 0 CTRL_L1_R2_C1 CTRL_L2_R2_C1 CTRL_L3_R2_C1 MES_2_1_1 MES_2_1_2 MES_2_1_3 MES_2_1_4 COLUMN RVAL=10k
+Xcol_2_2 C_2_2 0 0 0 0 CTRL_L1_R2_C2 CTRL_L2_R2_C2 CTRL_L3_R2_C2 MES_2_2_1 MES_2_2_2 MES_2_2_3 MES_2_2_4 COLUMN RVAL=10k
+Xcol_2_3 C_2_3 0 0 0 0 CTRL_L1_R2_C3 CTRL_L2_R2_C3 CTRL_L3_R2_C3 MES_2_3_1 MES_2_3_2 MES_2_3_3 MES_2_3_4 COLUMN RVAL=10k
+Xcol_3_1 C_3_1 0 0 0 0 CTRL_L1_R3_C1 CTRL_L2_R3_C1 CTRL_L3_R3_C1 MES_3_1_1 MES_3_1_2 MES_3_1_3 MES_3_1_4 COLUMN RVAL=10k
+Xcol_3_2 C_3_2 0 0 0 0 CTRL_L1_R3_C2 CTRL_L2_R3_C2 CTRL_L3_R3_C2 MES_3_2_1 MES_3_2_2 MES_3_2_3 MES_3_2_4 COLUMN RVAL=10k
+Xcol_3_3 C_3_3 0 0 0 0 CTRL_L1_R3_C3 CTRL_L2_R3_C3 CTRL_L3_R3_C3 MES_3_3_1 MES_3_3_2 MES_3_3_3 MES_3_3_4 COLUMN RVAL=10k
+
+* ---- Release control signals ----
+VCTRL_L3_R1_C1 CTRL_L3_R1_C1 0 PWL(0 0 9m 0 10m 5)
+VCTRL_L3_R1_C2 CTRL_L3_R1_C2 0 PWL(0 0 19m 0 20m 5)
+VCTRL_L3_R1_C3 CTRL_L3_R1_C3 0 PWL(0 0 29m 0 30m 5)
+VCTRL_L3_R2_C1 CTRL_L3_R2_C1 0 PWL(0 0 39m 0 40m 5)
+VCTRL_L3_R2_C2 CTRL_L3_R2_C2 0 PWL(0 0 49m 0 50m 5)
+VCTRL_L3_R2_C3 CTRL_L3_R2_C3 0 PWL(0 0 59m 0 60m 5)
+VCTRL_L3_R3_C1 CTRL_L3_R3_C1 0 PWL(0 0 69m 0 70m 5)
+VCTRL_L3_R3_C2 CTRL_L3_R3_C2 0 PWL(0 0 79m 0 80m 5)
+VCTRL_L3_R3_C3 CTRL_L3_R3_C3 0 PWL(0 0 89m 0 90m 5)
+VCTRL_L2_R1_C1 CTRL_L2_R1_C1 0 PWL(0 0 99m 0 100m 5)
+VCTRL_L2_R1_C2 CTRL_L2_R1_C2 0 PWL(0 0 109m 0 110m 5)
+VCTRL_L2_R1_C3 CTRL_L2_R1_C3 0 PWL(0 0 119m 0 120m 5)
+VCTRL_L2_R2_C1 CTRL_L2_R2_C1 0 PWL(0 0 129m 0 130m 5)
+VCTRL_L2_R2_C2 CTRL_L2_R2_C2 0 PWL(0 0 139m 0 140m 5)
+VCTRL_L2_R2_C3 CTRL_L2_R2_C3 0 PWL(0 0 149m 0 150m 5)
+VCTRL_L2_R3_C1 CTRL_L2_R3_C1 0 PWL(0 0 159m 0 160m 5)
+VCTRL_L2_R3_C2 CTRL_L2_R3_C2 0 PWL(0 0 169m 0 170m 5)
+VCTRL_L2_R3_C3 CTRL_L2_R3_C3 0 PWL(0 0 179m 0 180m 5)
+VCTRL_L1_R1_C1 CTRL_L1_R1_C1 0 PWL(0 0 189m 0 190m 5)
+VCTRL_L1_R1_C2 CTRL_L1_R1_C2 0 PWL(0 0 199m 0 200m 5)
+VCTRL_L1_R1_C3 CTRL_L1_R1_C3 0 PWL(0 0 209m 0 210m 5)
+VCTRL_L1_R2_C1 CTRL_L1_R2_C1 0 PWL(0 0 219m 0 220m 5)
+VCTRL_L1_R2_C2 CTRL_L1_R2_C2 0 PWL(0 0 229m 0 230m 5)
+VCTRL_L1_R2_C3 CTRL_L1_R2_C3 0 PWL(0 0 239m 0 240m 5)
+VCTRL_L1_R3_C1 CTRL_L1_R3_C1 0 PWL(0 0 249m 0 250m 5)
+VCTRL_L1_R3_C2 CTRL_L1_R3_C2 0 PWL(0 0 259m 0 260m 5)
+VCTRL_L1_R3_C3 CTRL_L1_R3_C3 0 PWL(0 0 269m 0 270m 5)
+
+.tran 0.28m 280m
+
+.control
+  set filetype=ascii
+  run
+  wrdata app/simulation/mes_voltages.dat V(MES_1_1_1) V(MES_1_1_2) V(MES_1_1_3) V(MES_1_1_4) V(MES_1_2_1) V(MES_1_2_2) V(MES_1_2_3) V(MES_1_2_4) V(MES_1_3_1) V(MES_1_3_2) V(MES_1_3_3) V(MES_1_3_4) V(MES_2_1_1) V(MES_2_1_2) V(MES_2_1_3) V(MES_2_1_4) V(MES_2_2_1) V(MES_2_2_2) V(MES_2_2_3) V(MES_2_2_4) V(MES_2_3_1) V(MES_2_3_2) V(MES_2_3_3) V(MES_2_3_4) V(MES_3_1_1) V(MES_3_1_2) V(MES_3_1_3) V(MES_3_1_4) V(MES_3_2_1) V(MES_3_2_2) V(MES_3_2_3) V(MES_3_2_4) V(MES_3_3_1) V(MES_3_3_2) V(MES_3_3_3) V(MES_3_3_4)
+  quit
+.endc
+.end
