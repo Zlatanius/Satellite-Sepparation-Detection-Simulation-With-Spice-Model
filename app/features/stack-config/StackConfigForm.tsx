@@ -9,7 +9,7 @@ import SectionCard from "@/app/components/SectionCard";
 import NumberField from "@/app/components/NumberField";
 
 import type { StackConfig, StackDerived } from "./types";
-import { clamp, formatMs, formatOhms } from "./format";
+import { clamp, formatMs } from "./format";
 
 type Props = {
   cfg: StackConfig;
@@ -163,11 +163,11 @@ export default function StackConfigForm({ cfg, setCfg, derived }: Props) {
           <NumberField
             label="Reference resistance"
             icon={<Cable className="h-4 w-4" />}
-            value={0}
-            min={1}
-            max={1e7}
-            step={1}
-            suffix="Ω"
+            value={parseFloat(cfg.resistorValue) || 10}
+            min={0.1}
+            max={10000}
+            step={0.1}
+            suffix="kΩ"
             onChange={(v) =>
               setCfg((c) => ({
                 ...c,
@@ -185,7 +185,7 @@ export default function StackConfigForm({ cfg, setCfg, derived }: Props) {
                 V = {cfg.supplyVoltage.toFixed(2)} V
               </span>
               <span className="rounded-full border border-purple-500/20 bg-purple-500/10 px-3 py-1 text-purple-100">
-                Rref = {cfg.resistorValue}
+                Rref = {cfg.resistorValue} kΩ
               </span>
             </div>
 
