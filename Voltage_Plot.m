@@ -1,13 +1,12 @@
 % Read data
-opts = detectImportOptions("mes_voltages.dat", ...
-    "FileType","text", ...
-    "MultipleDelimsAsOne", true);
+opts = detectImportOptions("app/simulation/mes_voltages.dat", ...
+    "FileType", "text", "MultipleDelimsAsOne", true);
 
 opts.Delimiter = {' '};      % space and tab
 
-T = readtable("mes_voltages.dat", opts);
+T = readtable("app/simulation/mes_voltages.dat", opts);
 
-n = 4; % Number of rows and columns
+n = 2; % Number of rows and columns
 number_of_brackets = n * n * 4;
 
 figure;

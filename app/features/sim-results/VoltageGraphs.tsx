@@ -87,11 +87,11 @@ function VoltageChart({
               color: "#e9d5ff",
             }}
             labelStyle={{ color: "#a855f7" }}
-            formatter={(value: number) => [
-              `${value.toFixed(4)} V`,
+            formatter={(value: any) => [
+              `${Number(value).toFixed(4)} V`,
               "Voltage",
             ]}
-            labelFormatter={(label: number) => `Time: ${label.toFixed(2)} ms`}
+            labelFormatter={(label: any) => `Time: ${Number(label).toFixed(2)} ms`}
           />
           <Area
             type="monotone"
