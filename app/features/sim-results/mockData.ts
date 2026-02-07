@@ -1,13 +1,7 @@
 import type { SimulationResults, SatelliteRelease, ColumnMeasurements } from "./types";
+import type { StackConfig } from "@/app/features/stack-config/types";
 
-export function generateMockSimulationResults(config: {
-  rows: number;
-  cols: number;
-  layers: number;
-  releaseStepMs: number;
-  supplyVoltage: number;
-  resistorValue: string;
-}): SimulationResults {
+export function generateMockSimulationResults(config: StackConfig): SimulationResults {
   const satellites: SatelliteRelease[] = [];
   const measurements: ColumnMeasurements[] = [];
 
@@ -15,8 +9,8 @@ export function generateMockSimulationResults(config: {
   let satId = 1;
 
   for (let layer = 1; layer <= config.layers; layer++) {
-    for (let row = 1; row <= config.rows; row++) {
-      for (let col = 1; col <= config.cols; col++) {
+    for (let row = 1; row <= config.size; row++) {
+      for (let col = 1; col <= config.size; col++) {
         satellites.push({
           id: `SAT-${satId.toString().padStart(3, "0")}`,
           column: col,
@@ -30,7 +24,7 @@ export function generateMockSimulationResults(config: {
     }
   }
 
-  for (let col = 1; col <= config.cols; col++) {
+  for (let col = 1; col <= config.size; col++) {
     const columnData: ColumnMeasurements = {
       columnId: `col-${col}`,
       columnLabel: `Column ${col}`,

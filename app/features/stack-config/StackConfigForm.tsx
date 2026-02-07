@@ -40,8 +40,7 @@ export default function StackConfigForm({ cfg, setCfg, derived }: Props) {
         setBusy(false);
       } else {
         const params = new URLSearchParams({
-          rows: cfg.rows.toString(),
-          cols: cfg.cols.toString(),
+          size: cfg.size.toString(),
           layers: cfg.layers.toString(),
           releaseStepMs: cfg.releaseStepMs.toString(),
           supplyVoltage: cfg.supplyVoltage.toString(),
@@ -71,33 +70,16 @@ export default function StackConfigForm({ cfg, setCfg, derived }: Props) {
       >
         <div className="grid gap-4 sm:grid-cols-2">
           <NumberField
-            label="Rows"
-            help="Number of rows in the stack"
+            label="Size (N × N)"
             icon={<Ruler className="h-4 w-4" />}
-            value={cfg.rows}
+            value={cfg.size}
             min={1}
             max={12}
             step={1}
             onChange={(v) =>
               setCfg((c) => ({
                 ...c,
-                rows: clamp(Math.round(v), 1, 12),
-              }))
-            }
-          />
-
-          <NumberField
-            label="Columns"
-            help="Number of columns in the stack"
-            icon={<Ruler className="h-4 w-4" />}
-            value={cfg.cols}
-            min={1}
-            max={12}
-            step={1}
-            onChange={(v) =>
-              setCfg((c) => ({
-                ...c,
-                cols: clamp(Math.round(v), 1, 12),
+                size: clamp(Math.round(v), 1, 12),
               }))
             }
           />

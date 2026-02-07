@@ -28,7 +28,7 @@ export default function SatelliteOverview({ satellites, config }: Props) {
           <StatCard
             icon={<Grid3x3 className="h-4 w-4" />}
             label="Satellite columns"
-            value={config.rows * config.cols}
+            value={config.size * config.size}
           />
           <StatCard
             icon={<Layers className="h-4 w-4" />}

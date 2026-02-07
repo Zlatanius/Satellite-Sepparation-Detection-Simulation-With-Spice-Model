@@ -157,7 +157,7 @@ function VoltageChart({
 export default function VoltageGraphs({ measurements, config }: Props) {
   // Generate all possible column IDs based on stack configuration
   const allColumns = useMemo(() => {
-    const totalColumns = config.rows * config.cols;
+    const totalColumns = config.size * config.size;
     return Array.from({ length: totalColumns }, (_, i) => {
       const columnNum = i + 1;
       const columnId = `col-${columnNum}`;
@@ -170,7 +170,7 @@ export default function VoltageGraphs({ measurements, config }: Props) {
         hasMeasurements,
       };
     });
-  }, [config.rows, config.cols, measurements]);
+  }, [config.size, measurements]);
 
   const [selectedColumn, setSelectedColumn] = useState<string>(
     allColumns[0]?.columnId || "",

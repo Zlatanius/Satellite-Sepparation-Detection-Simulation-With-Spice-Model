@@ -10,8 +10,7 @@ import type { StackConfig } from "@/app/features/stack-config/types";
 
 export default function Page() {
   const [cfg, setCfg] = useState<StackConfig>({
-    rows: 3,
-    cols: 3,
+    size: 3,
     layers: 3,
     releaseStepMs: 10,
     supplyVoltage: 5,

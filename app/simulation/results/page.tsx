@@ -15,8 +15,7 @@ export default function SimulationResultsPage() {
 
   useEffect(() => {
     const config = {
-      rows: parseInt(searchParams.get("rows") || "3"),
-      cols: parseInt(searchParams.get("cols") || "3"),
+      size: parseInt(searchParams.get("size") || "3"),
       layers: parseInt(searchParams.get("layers") || "3"),
       releaseStepMs: parseInt(searchParams.get("releaseStepMs") || "10"),
       supplyVoltage: parseFloat(searchParams.get("supplyVoltage") || "5"),

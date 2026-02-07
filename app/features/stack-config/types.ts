@@ -1,6 +1,5 @@
 export type StackConfig = {
-  rows: number;
-  cols: number;
+  size: number;
   layers: number;
   releaseStepMs: number;
   supplyVoltage: number;

@@ -3,8 +3,7 @@ import generateNetlist from "../api/generateNetlist";
 import type { StackConfig } from "../features/stack-config/types";
 
 const cfg: StackConfig = {
-  rows: 3,
-  cols: 3,
+  size: 3,
   layers: 3,
   releaseStepMs: 10,
   supplyVoltage: 5,

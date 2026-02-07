@@ -1,7 +1,7 @@
 import type { StackConfig, StackDerived } from "./types";
 
 export function computeDerived(cfg: StackConfig): StackDerived {
-  const columns = cfg.rows * cfg.cols;
+  const columns = cfg.size * cfg.size;
   const bracketsPerSatellite = 4;
   const satellites = columns * cfg.layers;
   const brackets = satellites * bracketsPerSatellite;
