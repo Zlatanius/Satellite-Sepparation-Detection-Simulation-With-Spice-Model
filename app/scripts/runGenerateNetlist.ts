@@ -1,6 +1,6 @@
 import fs from "fs";
 import generateNetlist from "../api/generateNetlist";
-import StackConfig from "../models/SatelliteStack";
+import type { StackConfig } from "../features/stack-config/types";
 
 const cfg: StackConfig = {
   rows: 3,

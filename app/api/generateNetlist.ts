@@ -1,4 +1,4 @@
-import StackConfig from "../models/SatelliteStack";
+import type { StackConfig } from "../features/stack-config/types";
 
 export default function generateNetlist(cfg: StackConfig): string {
   const { rows, cols, layers, releaseStepMs, supplyVoltage, resistorValue } =

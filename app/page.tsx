@@ -6,7 +6,7 @@ import StackHeader from "@/app/features/stack-config/StackHeader";
 import StackConfigForm from "@/app/features/stack-config/StackConfigForm";
 import StackSummary from "@/app/features/stack-config/StackSummary";
 import { computeDerived } from "@/app/features/stack-config/derived";
-import type StackConfig from "@/app/models/SatelliteStack";
+import type { StackConfig } from "@/app/features/stack-config/types";
 
 export default function Page() {
   const [cfg, setCfg] = useState<StackConfig>({

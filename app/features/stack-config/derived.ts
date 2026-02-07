@@ -1,5 +1,4 @@
-import type StackConfig from "@/app/models/SatelliteStack";
-import type { StackDerived } from "./types";
+import type { StackConfig, StackDerived } from "./types";
 
 export function computeDerived(cfg: StackConfig): StackDerived {
   const columns = cfg.rows * cfg.cols;

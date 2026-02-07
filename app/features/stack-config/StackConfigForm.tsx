@@ -1,14 +1,14 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Layers, Ruler, Timer, Zap, Cable, Play } from "lucide-react";
 
 import SectionCard from "@/app/components/SectionCard";
 import NumberField from "@/app/components/NumberField";
 
-import type StackConfig from "@/app/models/SatelliteStack";
-import type { StackDerived } from "./types";
+import type { StackConfig, StackDerived } from "./types";
 import { clamp, formatMs, formatOhms } from "./format";
 
 type Props = {
@@ -19,6 +19,7 @@ type Props = {
 
 export default function StackConfigForm({ cfg, setCfg, derived }: Props) {
   const [busy, setBusy] = useState(false);
+  const router = useRouter();
   console.log("Starting simulation with config:", cfg);
 
   async function simulateStack() {
@@ -36,14 +37,22 @@ export default function StackConfigForm({ cfg, setCfg, derived }: Props) {
 
       if (!response.ok) {
         alert(`Simulation failed: ${data.error}`);
+        setBusy(false);
       } else {
-        alert(`Simulation completed!\n\nOutput:\n${data.raw}`);
+        const params = new URLSearchParams({
+          rows: cfg.rows.toString(),
+          cols: cfg.cols.toString(),
+          layers: cfg.layers.toString(),
+          releaseStepMs: cfg.releaseStepMs.toString(),
+          supplyVoltage: cfg.supplyVoltage.toString(),
+          resistorValue: cfg.resistorValue,
+        });
+        router.push(`/simulation/results?${params.toString()}`);
       }
     } catch (error) {
       alert(
         `Error: ${error instanceof Error ? error.message : "Unknown error"}`,
       );
-    } finally {
       setBusy(false);
     }
   }

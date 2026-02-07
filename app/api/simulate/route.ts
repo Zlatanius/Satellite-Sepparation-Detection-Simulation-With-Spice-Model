@@ -2,7 +2,7 @@ import { exec } from "child_process";
 import fs from "fs";
 
 import generateNetlist from "../generateNetlist";
-import StackConfig from "@/app/models/SatelliteStack";
+import type { StackConfig } from "@/app/features/stack-config/types";
 
 export async function POST(req: Request) {
   console.log("Received simulation request:", req);
