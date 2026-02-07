@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import StackShell from "@/app/features/stack-config/StackShell";
 import SimulationHeader from "@/app/features/sim-results/SimulationHeader";
+import StackVisualization3D from "@/app/features/sim-results/StackVisualization3D";
 import SatelliteOverview from "@/app/features/sim-results/SatelliteOverview";
 import VoltageGraphs from "@/app/features/sim-results/VoltageGraphs";
 import { generateMockSimulationResults } from "@/app/features/sim-results/mockData";
@@ -49,6 +50,7 @@ export default function SimulationResultsPage() {
 
       <div className="mx-auto w-full max-w-5xl px-6 pb-10">
         <div className="mt-8 space-y-6">
+          <StackVisualization3D config={results.config} />
           <SatelliteOverview
             satellites={results.satellites}
             config={results.config}
