@@ -164,7 +164,10 @@ export default function VoltageGraphs({ measurements, config, selectedColumnLabe
     return Array.from({ length: totalColumns }, (_, i) => {
       const columnNum = i + 1;
       const columnId = `col-${columnNum}`;
-      const columnLabel = `Column ${columnNum}`;
+      // Convert to row-col format (1-1, 1-2, etc.)
+      const row = Math.floor(i / config.size) + 1;
+      const col = (i % config.size) + 1;
+      const columnLabel = `${row}-${col}`;
       const hasMeasurements = measurements.some((m) => m.columnId === columnId);
 
       return {
