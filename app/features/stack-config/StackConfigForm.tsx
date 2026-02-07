@@ -46,7 +46,7 @@ export default function StackConfigForm({ cfg, setCfg, derived }: Props) {
           supplyVoltage: cfg.supplyVoltage.toString(),
           resistorValue: cfg.resistorValue,
         });
-        router.push(`/simulation/results?${params.toString()}`);
+        router.push(`/features/sim-results?${params.toString()}`);
       }
     } catch (error) {
       alert(
